@@ -2,10 +2,10 @@
 ######################################################################
 # Docker-TLS-Proxy
 # Author: Benjamin Pape
-# A simple docker image for proxying SSL or TLS connections to a TCP 
-# or HTTP back-end. Designed to be used as a reverse proxy or 
-# kubernetes sidecar container. Simple to configure with environment 
-# variables. Uses HAProxy under the hood for lightweight 
+# A simple docker image for proxying SSL or TLS connections to a TCP
+# or HTTP back-end. Designed to be used as a reverse proxy or
+# kubernetes sidecar container. Simple to configure with environment
+# variables. Uses HAProxy under the hood for lightweight
 # and high-performance operation.
 # Updated 28/03/2023
 ######################################################################
@@ -31,21 +31,23 @@ if [ -z ${TARGET_HOST} ] || [ -z ${TARGET_PORT} ]; then show_help; fi
 ######################################################################
 [ -z ${LISTEN_PORT} ] && LISTEN_PORT=443
 [ -z ${MAX_CONN} ] && MAX_CONN=4000
+[ -z ${TLS_CERT} ] && TLS_CERT="/cert/tls.crt"
+[ -z ${TLS_KEY} ] && TLS_KEY="/cert/tls.key"
 
 ######################################################################
 # CERTIFICATES
 ######################################################################
 if [ ! -f /cert/tls.crt ] || [ ! -f /cert/tls.key ]; then
     echo "TLS Cert and/or Key not found in:"
-    echo "/cert/tls.key"
-    echo "/cert/tls.crt"
+    echo "${TLS_CERT}"
+    echo "${TLS_KEY}"
     echo "Generating temporary certificates for development purposes";
     echo "!!! DO NOT USE THIS IN PRODUCTION !!!"
-    openssl req -new -newkey rsa:2048 -sha256 -days 3650 -nodes -x509 -subj "/O=Development/OU=Container/CN=docker-tls-proxy" -keyout /etc/haproxy/temp.key -out /etc/haproxy/temp.crt -addext "subjectAltName=DNS:docker-tls-proxy.local,DNS:docker-tls-proxy" -addext "extendedKeyUsage=serverAuth" -addext "keyUsage=critical, digitalSignature, nonRepudiation"
+    openssl req -new -newkey rsa:2048 -sha256 -days 3650 -nodes -x509 -subj "/O=Development/OU=Container/CN=docker-tls-proxy" -keyout /etc/haproxy/temp.key -out /etc/haproxy/temp.crt -addext "subjectAltName=DNS:docker-tls-proxy.local,DNS:docker-tls-proxy" -addext "extendedKeyUsage=serverAuth" -addext "keyUsage=critical, digitalSignature, nonRepudiation" &> /dev/null
     cat /etc/haproxy/temp.key /etc/haproxy/temp.crt >> /etc/haproxy/fullchain.pem
 else
-    echo "Certificates found in /cert/tls.key and /cert/tls.crt"
-    cat /cert/tls.key /cert/tls.crt >> /etc/haproxy/fullchain.pem
+    echo "Certificates found in ${TLS_CERT} and ${TLS_KEY}"
+    cat "${TLS_CERT}" "${TLS_KEY}" >> /etc/haproxy/fullchain.pem
 fi
 
 ######################################################################
@@ -62,17 +64,17 @@ global
 
 defaults
     mode tcp
-    log global                                                        
+    log global
     option redispatch
-    option tcplog                                         
-    retries 3                                                                                                      
-    timeout queue 30s                                                     
-    timeout connect 30s                                                    
-    timeout client 1m                                                     
-    timeout server 10s                                                                                                        
+    option tcplog
+    retries 3
+    timeout queue 30s
+    timeout connect 30s
+    timeout client 1m
+    timeout server 10s
     timeout check 5s
 
-frontend TLS_IN 
+frontend TLS_IN
     bind *:${LISTEN_PORT} ssl crt /etc/haproxy/fullchain.pem
     default_backend TCP_OUT
     option tcplog
