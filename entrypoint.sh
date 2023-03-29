@@ -38,7 +38,7 @@ if [ -z ${TARGET_HOST} ] || [ -z ${TARGET_PORT} ]; then show_help; fi
 ######################################################################
 # CERTIFICATES
 ######################################################################
-if [ ! -f /cert/tls.crt ] || [ ! -f /cert/tls.key ]; then
+if [ ! -f ${TLS_CERT} ] || [ ! -f ${TLS_KEY} ]; then
     echo "TLS Cert and/or Key not found in:"
     echo "${TLS_CERT}"
     echo "${TLS_KEY}"
