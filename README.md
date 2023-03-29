@@ -86,3 +86,9 @@ spec:
 ```
 
 In this configuration the first container within the pod is running a default NGINX web server on port 80. The second container runs the papeben/tls-proxy which is configured to forward any connections from port 443 to 127.0.0.1:80, therefore ending up at the NGINX web server.
+
+There is also a volume mounted to the tls-proxy container from the my-tls-cert secret which contains a custom SSL server certificate. This secret can be created with a command such as:
+
+```
+kubectl create secret generic my-tls-cert --from-file=tls.key=WebApp.key --from-file=tls.crt=WebApp.crt
+```
