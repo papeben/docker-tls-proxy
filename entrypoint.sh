@@ -16,8 +16,8 @@
 show_help(){
     echo "Some required startup variables are missing.";
     echo "Ensure environment variables are set:";
-    echo " - TARGET_HOST: The backend server's IP or hostname.";
-    echo " - TARGET_PORT: The backend server's listening TCP port.";
+    echo " - TARGET_HOST: The destination server's IP or DNS name.";
+    echo " - TARGET_PORT: The destination server's listening TCP port.";
     exit 1
 }
 
