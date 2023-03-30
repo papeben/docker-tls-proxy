@@ -43,7 +43,7 @@ if [ ! -f ${TLS_CERT} ] || [ ! -f ${TLS_KEY} ]; then
     echo "${TLS_CERT}"
     echo "${TLS_KEY}"
     echo "Generating temporary certificates for development purposes";
-    echo "!!! DO NOT USE THIS IN PRODUCTION !!!"
+    echo "!!! USE PROPER CERTIFICATES IN PRODUCTION !!!"
     openssl req -new -newkey rsa:2048 -sha256 -days 3650 -nodes -x509 -subj "/O=Development/OU=Container/CN=docker-tls-proxy" -keyout /etc/haproxy/temp.key -out /etc/haproxy/temp.crt -addext "subjectAltName=DNS:docker-tls-proxy.local,DNS:docker-tls-proxy" -addext "extendedKeyUsage=serverAuth" -addext "keyUsage=critical, digitalSignature, nonRepudiation" &> /dev/null
     cat /etc/haproxy/temp.key /etc/haproxy/temp.crt >> /etc/haproxy/fullchain.pem
 else
