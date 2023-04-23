@@ -52,6 +52,20 @@ else
 fi
 
 ######################################################################
+# HTTP REDIRECT
+######################################################################
+if [ -z ${HTTP_REDIRECT} ]; then
+    REDIRECT_CONFIG=""
+else
+    REDIRECT_CONFIG="""
+frontend http_in
+    bind    *:80
+    mode http
+    http-request redirect scheme https
+    """
+fi
+
+######################################################################
 # HAPROXY CONFIGURATION
 ######################################################################
 
@@ -75,6 +89,8 @@ defaults
     timeout client 1m
     timeout server 10s
     timeout check 5s
+
+${REDIRECT_CONFIG}
 
 frontend TLS_IN
     bind *:${LISTEN_PORT} ssl crt /etc/haproxy/fullchain.pem

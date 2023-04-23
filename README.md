@@ -36,6 +36,7 @@ Optional parameters:
 - **TLS_CERT** [*/cert/tls.crt*] : SSL Certificate location
 - **TLS_KEY** [*/cert/tls.key*] : Certificate's private key location
 - **TLS_MIN_VERSION** [*TLSv1.1*] : Minimum acceptable TLS connection version
+- **HTTP_REDIRECT** [Unset] : Enable HTTP to HTTPS redirect on port 80 (set any value to enable)
 
 ## Kubernetes Sidecar
 
